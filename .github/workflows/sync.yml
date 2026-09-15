@@ -1,0 +1,24 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs at minute 0 of every hour
+  workflow_dispatch:      # Allows you to manually trigger it anytime
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: main # Change to 'master' if your repo uses master
+
+      - name: Sync upstream changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote add upstream https://github.com/Siddhj2206/MeldSpace.git
+          git fetch upstream
+          git merge upstream/main --ff-only || (echo "Cannot fast-forward sync due to merge conflicts" && exit 1)
+          git push origin main
