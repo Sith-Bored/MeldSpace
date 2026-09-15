@@ -2,23 +2,18 @@ name: Sync Upstream
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch:      # Manual trigger
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout target branch
-        uses: actions/checkout@v4
+      - name: Sync with upstream
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
         with:
-          ref: master
-
-      - name: Sync upstream changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote add upstream https://github.com/Siddhj2206/MeldSpace.git
-          git fetch upstream
-          git merge upstream/master --ff-only || (echo "Cannot fast-forward sync due to merge conflicts" && exit 1)
-          git push origin master
+          target_sync_branch: master
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_sync_branch: master
+          upstream_sync_repo: Siddhj2206/MeldSpace
+          test_mode: false
