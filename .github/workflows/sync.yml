@@ -2,18 +2,18 @@ name: Sync Upstream
 
 on:
   schedule:
-    - cron: '0 * * * *' # Every hour
-  workflow_dispatch:      # Manual trigger
+    - cron: '0 * * * *' # Runs hourly
+  workflow_dispatch:      # Allows manual trigger
+
+permissions:
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync with upstream
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
-        with:
-          target_sync_branch: master
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
-          upstream_sync_branch: master
-          upstream_sync_repo: Siddhj2206/MeldSpace
-          test_mode: false
+      - name: Sync fork via GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh repo sync Sith-Bored/MeldSpace -b master
